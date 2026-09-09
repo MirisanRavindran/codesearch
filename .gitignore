@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Project data — never commit these, they're huge
+data/
+*.faiss
+*.index
+chunks.jsonl
+metadata.json
+repos/
+
+# Secrets — GITHUB_TOKEN etc.
+.env
+.env.local
+*.pem
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+*.swp
