@@ -45,7 +45,7 @@ def chunk_python_file(
     
     try:
         tree = ast.parse(source, filename=file_path)
-    except SyntaxError:
+    except (SyntaxError, ValueError, RecursionError):
         return
 
     for node in tree.body:
