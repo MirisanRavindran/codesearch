@@ -1,14 +1,3 @@
-"""
-Minimal GitHub API client.
-
-We only need two things:
-1. List top-N Python repos by stars (search API).
-2. Download the repo tarball (fastest way to get all files without cloning).
-
-We use httpx (async) even though ingestion is a one-shot script,
-because it's the same lib the FastAPI backend uses — one less dep.
-"""
-
 from __future__ import annotations
 
 import io
@@ -43,20 +32,11 @@ class RepoInfo:
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=10))
 async def list_top_python_repos(n: int, client: httpx.AsyncClient) -> list[RepoInfo]:
-    """
-    Return top-N most-starred Python repos.
-
-    The search API caps at 100 per page, so we paginate.
-    Sort by stars descending — this is what "top" means for our use case.
-    """
     repos: list[RepoInfo] = []
     page = 1
     per_page = 100
 
     while len(repos) < n:
-        # NOTE: this query includes tutorials/awesome-lists too. If you want
-        # only "real" code, add filters like "size:>1000" or exclude common
-        # non-code repo topics. Left as a TODO for you.
         params = {
             "q": "language:Python",
             "sort": "stars",
@@ -96,12 +76,6 @@ async def list_top_python_repos(n: int, client: httpx.AsyncClient) -> list[RepoI
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=30))
 async def download_repo_tarball(repo: RepoInfo, client: httpx.AsyncClient) -> bytes:
-    """
-    Download the whole repo as a tarball.
-
-    We follow redirects (tarball_url returns a 302 to a codeload URL).
-    Timeout is generous — some repos are big.
-    """
     r = await client.get(
         repo.tarball_url,
         headers=_headers(),
@@ -114,11 +88,6 @@ async def download_repo_tarball(repo: RepoInfo, client: httpx.AsyncClient) -> by
 
 def iter_python_files_from_tarball(tarball_bytes: bytes):
     """
-    Yield (relative_path, source_text) for each .py file in the tarball.
-
-    Tarball root looks like "psf-requests-abc123/..." — we strip that top dir
-    so file_path is repo-relative.
-
     Skips files larger than max_file_size_bytes (usually generated code / data).
     """
     buf = io.BytesIO(tarball_bytes)
