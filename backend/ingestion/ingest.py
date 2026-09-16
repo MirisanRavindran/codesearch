@@ -19,7 +19,6 @@ Environment vars respected (see backend/config.py):
 from __future__ import annotations
 
 import asyncio
-import json
 from pathlib import Path
 
 import httpx

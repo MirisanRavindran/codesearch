@@ -17,7 +17,6 @@ FAISS only knows integer row ids, so we need a way to map back to CodeChunks.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import faiss
